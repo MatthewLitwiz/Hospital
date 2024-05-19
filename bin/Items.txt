@@ -1,0 +1,93 @@
+User Authentication and Authorization:
+
+Different roles (Admin, Doctor, Nurse, Receptionist, Patient).
+Secure login and registration system.
+Role-based access control.
+Patient Management:
+
+Add, edit, view, and delete patient information.
+Track patient visits and medical history.
+Appointment Scheduling:
+
+Schedule, reschedule, and cancel appointments.
+View doctor availability.
+Doctor Management:
+
+Add, edit, view, and delete doctor information.
+Assign doctors to patients.
+Medical Records Management:
+
+Store and retrieve patient medical records.
+Update treatment details, prescriptions, and lab results.
+Billing and Payment:
+
+Generate bills for services rendered.
+Process payments and issue receipts.
+Inventory Management:
+
+Manage medical supplies and equipment.
+Track inventory levels and reorder supplies.
+
+
+
+
+
+
+
+
+
+
+
+
+Users:
+
+user_id (Primary Key)
+username
+password (hashed)
+role (Admin, Doctor, Nurse, Receptionist, Patient)
+Patients:
+
+patient_id (Primary Key)
+first_name
+last_name
+dob
+address
+phone
+email
+Doctors:
+
+doctor_id (Primary Key)
+first_name
+last_name
+specialization
+phone
+email
+Appointments:
+
+appointment_id (Primary Key)
+patient_id (Foreign Key)
+doctor_id (Foreign Key)
+appointment_date
+status
+MedicalRecords:
+
+record_id (Primary Key)
+patient_id (Foreign Key)
+doctor_id (Foreign Key)
+visit_date
+diagnosis
+treatment
+prescription
+Bills:
+
+bill_id (Primary Key)
+patient_id (Foreign Key)
+amount
+billing_date
+status (Paid, Unpaid)
+Inventory:
+
+item_id (Primary Key)
+item_name
+quantity
+reorder_level
