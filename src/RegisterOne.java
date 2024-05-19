@@ -1,6 +1,9 @@
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -42,7 +45,7 @@ public class RegisterOne extends JFrame implements ActionListener{
         firstName.setFont(new Font("Arial", Font.BOLD, 20));
 
         firstNameField = new JTextField();
-        firstNameField.setBounds(200, 100, 200, 30);
+        firstNameField.setBounds(200, 100, 200, 15);
         firstNameField.setFont(new Font("Arial", Font.PLAIN, 20));
 
         JLabel lastName = new JLabel("Last Name:");
@@ -50,7 +53,7 @@ public class RegisterOne extends JFrame implements ActionListener{
         lastName.setFont(new Font("Arial", Font.BOLD, 20));
 
         lastNameField = new JTextField();
-        lastNameField.setBounds(200, 150, 200, 30);
+        lastNameField.setBounds(200, 150, 200, 15);
         lastNameField.setFont(new Font("Arial", Font.PLAIN, 20));
 
         JLabel email = new JLabel("Email:");
@@ -58,7 +61,7 @@ public class RegisterOne extends JFrame implements ActionListener{
         email.setFont(new Font("Arial", Font.BOLD, 20));
 
         emailField = new JTextField();
-        emailField.setBounds(200, 200, 200, 30);
+        emailField.setBounds(200, 200, 200, 15);
         emailField.setFont(new Font("Arial", Font.PLAIN, 20));
 
         JLabel password = new JLabel("Password:");
@@ -66,7 +69,7 @@ public class RegisterOne extends JFrame implements ActionListener{
         password.setFont(new Font("Arial", Font.BOLD, 20));
 
         passwordField = new JPasswordField();
-        passwordField.setBounds(200, 250, 200, 30);
+        passwordField.setBounds(200, 250, 200, 15);
         passwordField.setFont(new Font("Arial", Font.PLAIN, 20));
 
         JLabel confirmPassword = new JLabel("Confirm Password:");
@@ -74,7 +77,7 @@ public class RegisterOne extends JFrame implements ActionListener{
         confirmPassword.setFont(new Font("Arial", Font.BOLD, 20));
 
         confirmPasswordField = new JPasswordField();
-        confirmPasswordField.setBounds(200, 300, 200, 30);
+        confirmPasswordField.setBounds(200, 300, 200, 15);
         confirmPasswordField.setFont(new Font("Arial", Font.PLAIN, 20));
 
         JLabel phoneNumber = new JLabel("Phone Number:");
@@ -83,7 +86,7 @@ public class RegisterOne extends JFrame implements ActionListener{
 
         phoneNumberField = new JTextField();
         phoneNumberField.setBounds(200, 350, 200, 30);
-        phoneNumberField.setFont(new Font("Arial", Font.PLAIN, 20));
+        phoneNumberField.setFont(new Font("Arial", Font.PLAIN, 15));
 
         JLabel SSN = new JLabel("Last 4 Digit - SSN:");
         SSN.setBounds(15, 400, 200, 30);
@@ -91,7 +94,7 @@ public class RegisterOne extends JFrame implements ActionListener{
 
         SSNField = new JTextField();
         SSNField.setBounds(200, 400, 200, 30);
-        SSNField.setFont(new Font("Arial", Font.PLAIN, 20));
+        SSNField.setFont(new Font("Arial", Font.PLAIN, 15));
 
         JLabel id = new JLabel("Auto Generated ID:");
         id.setBounds(15, 450, 200, 30);
@@ -165,9 +168,41 @@ public class RegisterOne extends JFrame implements ActionListener{
             } else if (command.equals("Quit")) {
                 System.exit(0);
             }else {
-                this.setVisible(false);
-                new RegisterTwo(idNum).setVisible(true);
-            } 
+
+                try {
+                    // Insert user information into the database
+                    String query = "INSERT INTO users (first_name, last_name, email, password, phone_number, SSN, id, allergies, chronic_condition, medication, family_history, language, relationship, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    Connection conn = new Conn().c;
+                    PreparedStatement preparedStatement = conn.prepareStatement(query);
+                    preparedStatement.setString(1, firstName);
+                    preparedStatement.setString(2, lastName);
+                    preparedStatement.setString(3, email);
+                    preparedStatement.setString(4, password);
+                    preparedStatement.setString(5, phoneNumber);
+                    preparedStatement.setString(6, SSN);
+                    preparedStatement.setInt(7, idNum);
+                    preparedStatement.setString(8, "");
+                    preparedStatement.setString(9, "");
+                    preparedStatement.setString(10, "");
+                    preparedStatement.setString(11, "");
+                    preparedStatement.setString(12, "");
+                    preparedStatement.setString(13, "");
+                    preparedStatement.setString(14, "");
+
+                    int rowsAffected = preparedStatement.executeUpdate();
+
+                    if (rowsAffected > 0) {
+                        JOptionPane.showMessageDialog(null, "1/2 Page Complete");
+                        setVisible(false);
+                        new RegisterTwo(idNum).setVisible(true);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Failed to register user", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
     
         } 
     }

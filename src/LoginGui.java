@@ -3,17 +3,23 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 public class LoginGui extends JFrame implements ActionListener {
     private JButton loginButton, registerButton;
+    JTextField emailField;
+    JPasswordField passwordField;;
 
     LoginGui() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -43,9 +49,9 @@ public class LoginGui extends JFrame implements ActionListener {
         JPanel usernamePanel = new JPanel();
         usernamePanel.setBounds(50, 150, 75, 30);
 
-        JTextField usernameField = new JTextField();
-        usernameField.setBounds(150, 150, 200, 30);
-        usernameField.setFont(new Font("Arial", Font.PLAIN, 15));
+        emailField = new JTextField();
+        emailField.setBounds(150, 150, 200, 30);
+        emailField.setFont(new Font("Arial", Font.PLAIN, 15));
 
         JLabel password = new JLabel("Password: ");
         password.setBounds(50, 200, 100, 30);
@@ -55,7 +61,7 @@ public class LoginGui extends JFrame implements ActionListener {
         passwordPanel.setBounds(50, 200, 75, 30);
         passwordPanel.setBackground(Color.LIGHT_GRAY);
 
-        JPasswordField passwordField = new JPasswordField();
+        passwordField = new JPasswordField();
         passwordField.setBounds(150, 200, 200, 30);
         passwordField.setFont(new Font("Arial", Font.PLAIN, 15));
 
@@ -101,7 +107,7 @@ public class LoginGui extends JFrame implements ActionListener {
         panel.add(password);
         panel.add(passwordField);
         panel.add(username);
-        panel.add(usernameField);
+        panel.add(emailField);
         panel.add(title);
         panel.add(loginButton);
         panel.add(registerButton);
@@ -121,15 +127,48 @@ public class LoginGui extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
 
-        if (command.equals("Login")) {
-            setVisible(false);
-            new MainScreen();
 
-        } else if (command.equals("Register")) {
+        if (command.equals("Login")) {
+            String enteredEmail = emailField.getText();
+            String enteredPassword = new String(passwordField.getPassword());
+    
+            try {
+                // Connect to the database
+                Connection conn = new Conn().c;
+    
+                // Prepare the SQL statement to retrieve password for the entered email
+                String query = "SELECT email, password FROM users WHERE email=?";
+                PreparedStatement preparedStatement = conn.prepareStatement(query);
+                preparedStatement.setString(1, enteredEmail);
+    
+                // Execute the query
+                ResultSet resultSet = preparedStatement.executeQuery();
+    
+                // Check if the email exists in the database
+                if (resultSet.next()) {
+                    // Email found, retrieve the corresponding password
+                    String storedEmail = resultSet.getString("email");
+                    String storedPassword = resultSet.getString("password");
+    
+                    // Compare the passwords
+                    if (enteredPassword.equals(storedPassword)) {
+                        // Passwords match, allow login
+                        setVisible(false);
+                        new MainScreen();
+                    } else {
+                        // Passwords don't match, show error message
+                        JOptionPane.showMessageDialog(this, "Incorrect password", "Login Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else if (command.equalsIgnoreCase("Register")) {
             setVisible(false);
             new RegisterOne().setVisible(true);
         }
+    } catch (Exception ex) {
+        ex.printStackTrace();
+    }
+
 
     }
 
+}
 }

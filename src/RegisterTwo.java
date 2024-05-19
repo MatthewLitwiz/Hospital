@@ -1,6 +1,9 @@
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -188,6 +191,11 @@ public class RegisterTwo extends JFrame implements ActionListener{
             if (allergies.equals("") || medication.equals("") || date == null) {
                 JOptionPane.showMessageDialog(this, "Please fill in all fields", "Input Error", JOptionPane.ERROR_MESSAGE);
             } else {
+
+                // Update the user's information in the database
+
+                updateUserData(idNum, allergies, chronicCondition, medication, familyHist, language, relationship, date);
+
             // Move to the next registration page
             this.setVisible(false);
             new MainScreen();
@@ -195,4 +203,28 @@ public class RegisterTwo extends JFrame implements ActionListener{
     }
   
 }
+
+    private void updateUserData(int idNum, String allergies, String chronicCondition, String medication, String familyHist, String language, String relationship, String date) {
+        try {
+            Connection conn = new Conn().c;
+            PreparedStatement preparedStatement = conn.prepareStatement("UPDATE users SET allergies = ?, chronic_condition = ?, medication = ?, family_history = ?, language = ?, relationship = ?, date = ? WHERE id = ?");
+            preparedStatement.setString(1, allergies);
+            preparedStatement.setString(2, chronicCondition);
+            preparedStatement.setString(3, medication);
+            preparedStatement.setString(4, familyHist);
+            preparedStatement.setString(5, language);
+            preparedStatement.setString(6, relationship);
+            preparedStatement.setString(7, date);
+            preparedStatement.setInt(8, idNum);
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "You've SuccessFully Registered","Info", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Failed to update user information", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
 }
