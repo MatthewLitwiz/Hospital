@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -19,8 +20,10 @@ public class RegisterOne extends JFrame implements ActionListener{
     JPasswordField passwordField, confirmPasswordField;
     private JButton next, quit;
     int idNum;
+    JComboBox<String> genderBox;
 
     public RegisterOne() {
+
         setTitle("Page 1/2");
         setSize(500, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -45,56 +48,61 @@ public class RegisterOne extends JFrame implements ActionListener{
         firstName.setFont(new Font("Arial", Font.BOLD, 20));
 
         firstNameField = new JTextField();
-        firstNameField.setBounds(200, 100, 200, 15);
-        firstNameField.setFont(new Font("Arial", Font.PLAIN, 20));
+        firstNameField.setBounds(200, 100, 250, 30);
+        firstNameField.setFont(new Font("Arial", Font.PLAIN, 15));
 
         JLabel lastName = new JLabel("Last Name:");
         lastName.setBounds(15, 150, 200, 30);
         lastName.setFont(new Font("Arial", Font.BOLD, 20));
 
         lastNameField = new JTextField();
-        lastNameField.setBounds(200, 150, 200, 15);
-        lastNameField.setFont(new Font("Arial", Font.PLAIN, 20));
+        lastNameField.setBounds(200, 150, 250, 30);
+        lastNameField.setFont(new Font("Arial", Font.PLAIN, 15));
 
         JLabel email = new JLabel("Email:");
         email.setBounds(15, 200, 200, 30);
         email.setFont(new Font("Arial", Font.BOLD, 20));
 
         emailField = new JTextField();
-        emailField.setBounds(200, 200, 200, 15);
-        emailField.setFont(new Font("Arial", Font.PLAIN, 20));
+        emailField.setBounds(200, 200, 250, 30);
+        emailField.setFont(new Font("Arial", Font.PLAIN, 15));
 
         JLabel password = new JLabel("Password:");
         password.setBounds(15, 250, 200, 30);
         password.setFont(new Font("Arial", Font.BOLD, 20));
 
         passwordField = new JPasswordField();
-        passwordField.setBounds(200, 250, 200, 15);
-        passwordField.setFont(new Font("Arial", Font.PLAIN, 20));
+        passwordField.setBounds(200, 250, 250, 30);
+        passwordField.setFont(new Font("Arial", Font.PLAIN, 15));
 
         JLabel confirmPassword = new JLabel("Confirm Password:");
         confirmPassword.setBounds(15, 300, 200, 30);
         confirmPassword.setFont(new Font("Arial", Font.BOLD, 20));
 
         confirmPasswordField = new JPasswordField();
-        confirmPasswordField.setBounds(200, 300, 200, 15);
-        confirmPasswordField.setFont(new Font("Arial", Font.PLAIN, 20));
+        confirmPasswordField.setBounds(200, 300, 250, 30);
+        confirmPasswordField.setFont(new Font("Arial", Font.PLAIN, 15));
 
         JLabel phoneNumber = new JLabel("Phone Number:");
         phoneNumber.setBounds(15, 350, 200, 30);
         phoneNumber.setFont(new Font("Arial", Font.BOLD, 20));
 
         phoneNumberField = new JTextField();
-        phoneNumberField.setBounds(200, 350, 200, 30);
+        phoneNumberField.setBounds(200, 350, 250, 30);
         phoneNumberField.setFont(new Font("Arial", Font.PLAIN, 15));
 
-        JLabel SSN = new JLabel("Last 4 Digit - SSN:");
-        SSN.setBounds(15, 400, 200, 30);
-        SSN.setFont(new Font("Arial", Font.BOLD, 20));
+        JLabel gender = new JLabel("Gender");
+        gender.setBounds(15, 400, 200, 30);
+        gender.setFont(new Font("Arial", Font.BOLD, 20));
 
-        SSNField = new JTextField();
-        SSNField.setBounds(200, 400, 200, 30);
-        SSNField.setFont(new Font("Arial", Font.PLAIN, 15));
+        genderBox = new JComboBox<String>();
+        genderBox.setBounds(200, 400, 250, 30);
+        genderBox.setFont(new Font("Arial", Font.PLAIN, 15));
+        genderBox.addItem("Male");
+        genderBox.addItem("Female");
+        genderBox.addItem("Other");
+        genderBox.setSelectedItem(null);
+        genderBox.addActionListener(this);
 
         JLabel id = new JLabel("Auto Generated ID:");
         id.setBounds(15, 450, 200, 30);
@@ -133,8 +141,8 @@ public class RegisterOne extends JFrame implements ActionListener{
         panel.add(passwordField);
         panel.add(confirmPasswordField);
         panel.add(phoneNumberField);
-        panel.add(SSN);
-        panel.add(SSNField);
+        panel.add(gender);
+        panel.add(genderBox);
         panel.add(next);
         panel.add(quit);
 
@@ -154,56 +162,22 @@ public class RegisterOne extends JFrame implements ActionListener{
             String password = passwordField.getText();
             String confirmPassword = confirmPasswordField.getText();
             String phoneNumber = phoneNumberField.getText();
-            String SSN = SSNField.getText();
+            String gender = (String)genderBox.getSelectedItem();
 
-            if (firstName.equals("") || lastName.equals("") || email.equals("") || password.equals("") || confirmPassword.equals("") || phoneNumber.equals("") || SSN.equals("")) {
+            if (firstName.equals("") || lastName.equals("") || email.equals("") || password.equals("") || confirmPassword.equals("") || phoneNumber.equals("") || gender.equals("")) {
                 JOptionPane.showMessageDialog(null, "Please fill out all fields", "Error", JOptionPane.ERROR_MESSAGE);
 
             } else if (password.equals(confirmPassword) == false) {
                 JOptionPane.showMessageDialog(null, "Passwords do not match", "Error", JOptionPane.WARNING_MESSAGE);
 
-            } else if (SSN.length() != 4) {
-                JOptionPane.showMessageDialog(null, "Please enter the last 4 digits of your SSN", "Error", JOptionPane.WARNING_MESSAGE);
-
-            } else if (command.equals("Quit")) {
+            }  else if (command.equals("Quit")) {
                 System.exit(0);
-            }else {
+            }else if(Conn.register(email, confirmPassword, firstName, lastName, phoneNumber, gender, idNum, firstName, lastName, email, password, confirmPassword, phoneNumber, gender)){
+                setVisible(false);
+                new RegisterTwo();
 
-                try {
-                    // Insert user information into the database
-                    String query = "INSERT INTO users (first_name, last_name, email, password, phone_number, SSN, id, allergies, chronic_condition, medication, family_history, language, relationship, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                    Connection conn = new Conn().c;
-                    PreparedStatement preparedStatement = conn.prepareStatement(query);
-                    preparedStatement.setString(1, firstName);
-                    preparedStatement.setString(2, lastName);
-                    preparedStatement.setString(3, email);
-                    preparedStatement.setString(4, password);
-                    preparedStatement.setString(5, phoneNumber);
-                    preparedStatement.setString(6, SSN);
-                    preparedStatement.setInt(7, idNum);
-                    preparedStatement.setString(8, "");
-                    preparedStatement.setString(9, "");
-                    preparedStatement.setString(10, "");
-                    preparedStatement.setString(11, "");
-                    preparedStatement.setString(12, "");
-                    preparedStatement.setString(13, "");
-                    preparedStatement.setString(14, "");
-
-                    int rowsAffected = preparedStatement.executeUpdate();
-
-                    if (rowsAffected > 0) {
-                        JOptionPane.showMessageDialog(null, "1/2 Page Complete");
-                        setVisible(false);
-                        new RegisterTwo(idNum).setVisible(true);
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Failed to register user", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
+            }
             }
     
         } 
     }
-}

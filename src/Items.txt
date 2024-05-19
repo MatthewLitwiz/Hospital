@@ -9,10 +9,6 @@ Add, edit, view, and delete patient information.
 Track patient visits and medical history.
 Appointment Scheduling:
 
-Schedule, reschedule, and cancel appointments.
-View doctor availability.
-Doctor Management:
-
 Add, edit, view, and delete doctor information.
 Assign doctors to patients.
 Medical Records Management:

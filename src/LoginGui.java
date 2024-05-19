@@ -20,17 +20,23 @@ public class LoginGui extends JFrame implements ActionListener {
     private JButton loginButton, registerButton;
     JTextField emailField;
     JPasswordField passwordField;;
+    PatientInfo patientInfo;
+    int idNum;
 
-    LoginGui() {
+    LoginGui(int idNum) {
+
+        this.idNum = idNum;
+
+
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(400, 500);
         setLocationRelativeTo(null);
         setResizable(false);
         setTitle("Login to Hospital");
-
         addGuiComponents();
 
         setVisible(true);
+
     }
 
     public void addGuiComponents() {
@@ -42,7 +48,7 @@ public class LoginGui extends JFrame implements ActionListener {
         title.setBounds(100, 20, 300, 50);
         title.setFont(new Font("Serif", Font.BOLD, 30));
 
-        JLabel username = new JLabel("Username: ");
+        JLabel username = new JLabel("Email: ");
         username.setBounds(50, 150, 100, 30);
         username.setFont(new Font("Dialog", Font.BOLD, 16));
 
@@ -127,7 +133,6 @@ public class LoginGui extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
 
-
         if (command.equals("Login")) {
             String enteredEmail = emailField.getText();
             String enteredPassword = new String(passwordField.getPassword());
@@ -154,21 +159,23 @@ public class LoginGui extends JFrame implements ActionListener {
                     if (enteredPassword.equals(storedPassword)) {
                         // Passwords match, allow login
                         setVisible(false);
-                        new MainScreen();
+                        new MainScreen(idNum);
                     } else {
                         // Passwords don't match, show error message
                         JOptionPane.showMessageDialog(this, "Incorrect password", "Login Error", JOptionPane.ERROR_MESSAGE);
                     }
-                } else if (command.equalsIgnoreCase("Register")) {
-            setVisible(false);
-            new RegisterOne().setVisible(true);
-        }
+                }
     } catch (Exception ex) {
         ex.printStackTrace();
     }
 
 
+    }else if (command.equalsIgnoreCase("Register")) {
+        setVisible(false);
+        new RegisterOne(patientInfo).setVisible(true);
     }
 
 }
+
+
 }

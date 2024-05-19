@@ -16,16 +16,13 @@ import com.toedter.calendar.JDateChooser;
 
 public class RegisterTwo extends JFrame implements ActionListener{
 
-    private int idNum;
 
     private JTextField allergiesField, medicationField;
     private JButton finish;
     private JComboBox<String> languageField, relationshipField, chronicConditions, familyHistory;
     private JDateChooser dateChooser;
 
-    public RegisterTwo(int idNum) {
-
-        this.idNum = idNum;
+    public RegisterTwo() {
 
         setTitle("Page 2/2");
         setSize(500, 600);
@@ -198,7 +195,7 @@ public class RegisterTwo extends JFrame implements ActionListener{
 
             // Move to the next registration page
             this.setVisible(false);
-            new MainScreen();
+            new LoginGui(idNum);
             }
     }
   
